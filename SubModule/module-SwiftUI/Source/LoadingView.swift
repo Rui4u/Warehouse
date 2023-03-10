@@ -59,6 +59,7 @@ public struct LoadingView<Content>: View where Content: View {
             .shadow(color: .init(white: 0.95), radius: 10, x: 0, y: 0)
             
         }
+//        .id(UUID())
     }
 
 }
@@ -77,3 +78,27 @@ struct ActivityIndicator: UIViewRepresentable {
         isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
     }
 }
+
+
+public struct LoadingView2: View {
+    @State private var isLoading = false
+    public init() {
+        self._isLoading = State(initialValue: self.isLoading)
+    }
+    public var body: some View {
+        VStack {
+            Circle()
+                .trim(from: 0, to: 0.7)
+                .stroke(Color.blue, lineWidth: 5)
+                .frame(width: 50, height: 50)
+                .rotationEffect(Angle(degrees: isLoading ? 360 : 0))
+                .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
+                .onAppear() {
+                    self.isLoading = true
+                }
+
+            Text("Loading...")
+        }
+    }
+}
+

@@ -191,3 +191,49 @@ struct ChoseIconItem: View {
         }
     }
 }
+//
+//
+//struct ContentLoadingView: View {
+//    @State private var isLoading = false
+//
+//    var body: some View {
+//        VStack {
+//            if isLoading {
+//                LoadingView2()
+//            } else {
+//                // Your other views here
+//            }
+//
+//            Button(action: {
+//                self.isLoading.toggle()
+//            }) {
+//                Text("Toggle Loading")
+//            }
+//        }
+//    }
+//}
+//
+//struct ContentLoadingView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentToastView()
+//    }
+//}
+//
+//
+//struct ContentToastView: View {
+//    @State private var showToast = false
+//
+//    var body: some View {
+//        VStack {
+//            Text("Hello, World!")
+//                .padding()
+//
+//            Button(action: {
+//                self.showToast.toggle()
+//            }) {
+//                Text("Show Toast")
+//            }
+//        }
+//        .showToast(isPresented: $showToast, message: "This is a toast message.")
+//    }
+//}

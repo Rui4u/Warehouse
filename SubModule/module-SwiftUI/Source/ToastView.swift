@@ -78,3 +78,63 @@ extension View {
         }
      }
 }
+
+
+extension View {
+   public func showToast(isPresented: Binding<Bool>, message: String, duration: Double = 2.0) -> some View {
+        self.modifier(ToastView(isPresented: isPresented, message: message, duration: duration))
+    }
+}
+
+struct ToastView: ViewModifier {
+    @Binding var isPresented: Bool
+    let message: String
+    let duration: Double
+
+    @State private var offset: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+
+            if isPresented {
+                VStack {
+                    Text(message)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(radius: 5)
+                        .transition(.scale)
+                        .animation(.easeInOut(duration: 0.3))
+
+                    Spacer()
+                }
+                .zIndex(1)
+                .transition(.opacity)
+                .animation(.easeInOut(duration: 0.3).delay(duration))
+                .offset(x: 0, y: offset)
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                        withAnimation {
+                            self.isPresented = false
+                        }
+                    }
+
+                    withAnimation(Animation.spring(response: 0.3, dampingFraction: 0.3, blendDuration: 0.3)) {
+                        self.offset = -10
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(Animation.spring(response: 0.3, dampingFraction: 0.3, blendDuration: 0.3)) {
+                            self.offset = 10
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        withAnimation(Animation.spring(response: 0.3, dampingFraction: 0.3, blendDuration: 0.3)) {
+                            self.offset = 0
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

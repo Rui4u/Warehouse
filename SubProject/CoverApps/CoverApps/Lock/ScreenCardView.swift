@@ -18,42 +18,93 @@ struct ScreenCardView: View {
     let cornerRadius: CGFloat = 10
     @State var showSelctedApp = false
     var body: some View {
-        VStack (spacing: 4){
-            CardViewMainView(group: group,selection: $selection, isPresented:$showSelctedApp)
-                .swipeActions(edge: .leading) {
-                    Button(action: openOrCloseGroup) {
-                        Label(group.open ? "隐藏": "开启", systemImage: "delete")
-                    }.tint(.orange)
-                }
-            Rectangle().frame(height: 10)
-                .foregroundColor(.white)
-                
-            HStack {
-                Button(action: openOrCloseGroup) {
-                    ZStack {
-                        if (group.open) {
-                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                                .stroke(group.open ? .white : .blue, lineWidth: 2)
-                                .background(group.open ? .blue : .white)
-                                .cornerRadius(cornerRadius)
-                        } else {
-                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                                .stroke(group.open ? .white : .blue, lineWidth: 2)
-                                .background(group.open ? .blue : .white)
-                        }
-                        
-                        HStack {
-                            Image(systemName: group.open ? "eye.slash" : "eye.slash.fill")
-                                .foregroundColor(group.open ? .white : .blue)
-                            Text(group.open ? "已隐藏"  : "待隐藏" )
-                                .foregroundColor(group.open ? .white : .blue)
-                        }
-                    }
-                    .frame(height: 45)
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
+        CardView(title: group.name, count: group.count > 0 ? String(group.count) : "请添加",switchAction: openOrCloseGroup, isOn: $group.open)
+        
+        
+//        VStack (spacing: 4){
+//            CardViewMainView(group: group,selection: $selection, isPresented:$showSelctedApp)
+//                .swipeActions(edge: .leading) {
+//                    Button(action: openOrCloseGroup) {
+//                        Label(group.open ? "隐藏": "开启", systemImage: "delete")
+//                    }.tint(.orange)
+//                }
+//            Rectangle().frame(height: 10)
+//                .foregroundColor(.white)
+//
+//            HStack {
+//                Button(action: openOrCloseGroup) {
+//                    ZStack {
+//                        if (group.open) {
+//                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+//                                .stroke(group.open ? .white : .blue, lineWidth: 2)
+//                                .background(group.open ? .blue : .white)
+//                                .cornerRadius(cornerRadius)
+//                        } else {
+//                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+//                                .stroke(group.open ? .white : .blue, lineWidth: 2)
+//                                .background(group.open ? .blue : .white)
+//                        }
+//
+//                        HStack {
+//                            Image(systemName: group.open ? "eye.slash" : "eye.slash.fill")
+//                                .foregroundColor(group.open ? .white : .blue)
+//                            Text(group.open ? "已隐藏"  : "待隐藏" )
+//                                .foregroundColor(group.open ? .white : .blue)
+//                        }
+//                    }
+//                    .frame(height: 45)
+//                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
+//                }
+//            }
+//        }
+            .swipeActions(edge: .trailing) {
+                Button (role: .destructive){
+                    ScreenLockManager.delete(id:group.id)
+                    ManagedSettingsStore(named: ManagedSettingsStore.Name(group.name)).clearAllSettings()
+                } label: {
+                    Label("删除", systemImage: "delete")
                 }
             }
-        }
+            .onTapGesture {
+                showSelctedApp = true
+            }
+            
+            .familyActivityPicker(isPresented: $showSelctedApp,
+                                   selection: $selection)
+            .onChange(of: selection) { newSelection in
+                
+                if ScreenLockManager.compare(selection: selection, group: group) {
+                    return
+                }
+                
+                let applicationsTokens = selection.applicationTokens
+    //            let webDomainsTokens = selection.webDomainTokens
+                let categoryTokens = selection.categoryTokens
+                
+                ManagedSettingsStore(named: ManagedSettingsStore.Name(group.name)).clearAllSettings()
+                group.count = applicationsTokens.count
+                
+                group.applicationTokens = applicationsTokens
+    //            group.webDomainTokens = webDomainsTokens
+                group.activityCategoryTokens = categoryTokens;
+                group.count = group.updateCount
+                if group.count == 0 {
+                    group.open = false
+                } else {
+                    group.open = group.open
+                }
+                ScreenLockManager.save(group: group)
+            }
+            .onChange(of: showSelctedApp) { newValue in
+                if (showSelctedApp == false) {
+                    if group.count == 0 {
+                        group.open = false
+                    }
+                }
+            }
+            .onAppear {
+                ScreenLockManager.loadLocatinData(selection: &selection, id: group.creatTime)
+            }
     }
     
     func openOrCloseGroup() {
@@ -132,7 +183,7 @@ struct CardViewMainView: View {
             }
         }
         .onAppear {
-            ScreenLockManager.loadLocatinData(selection: &selection, groupName: group.name)
+            ScreenLockManager.loadLocatinData(selection: &selection, id: group.creatTime)
         }
         
     }
@@ -158,6 +209,42 @@ struct CardViewMainView_Previews: PreviewProvider {
         CardViewMainView(group: AppGroup(name: "应用分组1", open: true, count: 0, creatTime: Date().timeIntervalSince1970 + 4),
                          selection: .constant(FamilyActivitySelection(includeEntireCategory: true)),
                          isPresented: .constant(true)
+        )
+    }
+}
+
+struct CardView: View {
+    let title: String
+    let count: String
+    var switchAction : ()->()
+    @Binding var isOn: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.title)
+                .foregroundColor(.black)
+
+            HStack {
+                Text(count)
+                    .font(.largeTitle)
+                    .bold()
+                    .foregroundColor(.black)
+
+                Spacer()
+
+                Toggle("", isOn: $isOn)
+                    .labelsHidden()
+                    .toggleStyle(SwitchToggleStyle(tint: .blue))
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray, lineWidth: 1)
         )
     }
 }

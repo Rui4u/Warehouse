@@ -21,6 +21,7 @@ struct MainView: View {
     }
     
     var body: some View {
+//        ContentToastView()
         if (launchManager.showAuthority) {
             TabView(selection: $selection) {
                 HomePage()
@@ -48,6 +49,43 @@ struct MainView: View {
                     .foregroundColor(.gray)
                     .font(.footnote)
                     .padding()
+            }
+        }
+    }
+}
+
+struct ContentSahuaView: View {
+    @State private var showConfetti = false
+
+    var body: some View {
+        ZStack {
+            // Your other views here
+
+            if showConfetti {
+                ConfettiView()
+                    .transition(.asymmetric(insertion: .scale, removal: .opacity))
+                    .animation(.easeInOut(duration: 1.0))
+            }
+        }
+        .onAppear {
+            self.showConfetti = true
+        }
+    }
+}
+
+struct ConfettiView: View {
+    let colors: [Color] = [.red, .green, .blue, .yellow, .orange, .pink, .purple]
+
+    var body: some View {
+        GeometryReader { geometry in
+            ForEach(0..<100) { index in
+                Circle()
+                    .foregroundColor(self.colors[index % self.colors.count])
+                    .frame(width: 10, height: 10)
+                    .offset(x: CGFloat.random(in: -100...100), y: CGFloat.random(in: -100...100))
+                    .rotationEffect(Angle(degrees: Double.random(in: 0...360)))
+                    .animation(Animation.interpolatingSpring(stiffness: 0.5, damping: 0.5))
+                    .position(x: CGFloat.random(in: 0...geometry.size.width), y: CGFloat.random(in: 0...geometry.size.height))
             }
         }
     }

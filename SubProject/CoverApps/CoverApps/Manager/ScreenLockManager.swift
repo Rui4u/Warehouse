@@ -158,9 +158,9 @@ class ScreenLockManager: ObservableObject {
         return false
     }
     
-    static func loadLocatinData(selection : inout  FamilyActivitySelection, groupName:String){
+    static func loadLocatinData(selection : inout  FamilyActivitySelection, id: TimeInterval){
         
-        if let locationGroup = LocationManager.find([AppGroup.Location].self,key: "group_key")?.filter({$0.name == groupName }).first {
+        if let locationGroup = LocationManager.find([AppGroup.Location].self,key: "group_key")?.filter({$0.id == id }).first {
             selection.applicationTokens = locationGroup.applicationTokens
             selection.webDomainTokens = locationGroup.webDomainTokens
             selection.categoryTokens = locationGroup.activityCategoryTokens

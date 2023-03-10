@@ -79,6 +79,10 @@ struct HomeMainView: View {
                     }
                 }
             }
+            .listStyle(PlainListStyle())
+            .onAppear{
+                UITableView.appearance().separatorStyle = .none
+            }
         }
     }
 }

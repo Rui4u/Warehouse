@@ -102,3 +102,4 @@ struct PasswordView_Previews: PreviewProvider {
         PasswordView(manager: PasswordManager(type: .inputPassword) )
     }
 }
+
