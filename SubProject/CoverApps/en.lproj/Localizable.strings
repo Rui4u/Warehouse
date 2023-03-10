@@ -1,0 +1,29 @@
+/*
+  Localizable.strings
+  CoverApps
+
+  Created by sharui on 2023/1/6.
+  
+*/
+
+"待隐藏" = "Pending to Hide";
+"已隐藏"   = "Hidden";
+"应用程序" = "Applications";
+"设置" = "Settings";
+"请添加" = "Please Add";
+"输入密码" = "Enter Password";
+"密码错误" = "Password Error";
+"密码不一致，请重新输入" = "Inconsistent Password, Please Re-enter";
+"还原所有应用程序" = "Restore All Applications";
+"设置密码" = "Set Password";
+"设置替身密码" = "Set Surrogate Password";
+"设置替身密码后，App会伪装成记事本App" = "After setting the surrogate password, the App will be disguised as a Notepad App";
+"请开发者小哥哥喝杯奶茶~  😘" = "Give Developer a Cup of Milk Tea~  😘";
+"捐赠" = "Donate";
+"关闭" = "close";
+"添加分组" = "Add Group";
+"取消" = "Cancel";
+"确定" = "Sumbit";
+"请输入分组名称" = "Input Group Name";
+"自定义图标" = "Custom Icon";
+"⚠️⚠️⚠️注意：\n因为使用系统API，再次显示隐藏的App的时候，会使App移动到最后一页。若要解决次问题，只能等到Apple官方更新！！" = "⚠️⚠️⚠️ Note: \n Because of the use of the system API, displaying the hidden App again will cause the App to move to the last page. We'll have to wait for an official Apple update!!";

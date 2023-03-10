@@ -1,0 +1,22 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'ErrorAnalysis' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for ErrorAnalysis
+
+  pod 'SQLite.swift', '~> 0.13.3'
+  pod 'lib-foundation', :path => '../../SubModule/lib-foundation'
+  pod 'module-SwiftUI', :path => '../../SubModule/module-SwiftUI'
+  target 'ErrorAnalysisTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'ErrorAnalysisUITests' do
+    # Pods for testing
+  end
+
+end
